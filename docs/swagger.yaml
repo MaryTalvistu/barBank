@@ -16,6 +16,8 @@ paths:
             schema:
               $ref: '#/components/schemas/user'
         required: true
+      tags:
+        - users
       responses:
         '201':
           description: Successful response.
@@ -27,21 +29,119 @@ paths:
               examples:
                 'User validation failed: {param}: Path `{param}` is required.':
                   value:
-                    error: 'User validation failed: Path `{param}` is required.'
+                    error: 'User validation failed: {param}: Path `{param}` is required.'
           description: Input validation failed. Some parameter is missing or in incorrect format.
         '409':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user'
+                $ref: '#/components/schemas/error'
               examples:
                 Username already exists:
                   value:
                     error: Username already exists
-          description: Username already exists.
+          description: Username already exists
       operationId: createuser
       summary: Create a user
       description: Creates a new instance of a `user`.
+  /sessions:
+    summary: Path used to manage the list of sessions.
+    description: >-
+      The REST endpoint/path used to list and create zero or more `session` entities.  This path
+      contains a `GET` and `POST` operation to perform the list and create tasks, respectively.
+    post:
+      requestBody:
+        description: A new `session` to be created.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/session'
+            examples:
+              POST /sessions request body:
+                value:
+                  username: kalle
+                  password: kaalikaskalle
+        required: true
+      tags:
+        - sessions
+      responses:
+        '201':
+          content:
+            application/json:
+              examples:
+                POST /sessions 201 response:
+                  value:
+                    token: 31m57jabv526524n5
+          description: Successful response.
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                Invalid credentials:
+                  value:
+                    error: Invalid credentials
+          description: Invalid credentials
+      operationId: createsession
+      summary: Create a session
+      description: Creates a new instance of a `session`.
+    delete:
+      tags:
+        - sessions
+      responses:
+        '204':
+          description: Successful logout
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                Invalid Authorization header:
+                  value:
+                    error: Invalid authorization header
+                Invalid Authorization header format:
+                  value:
+                    error: Invalid authorization header format
+                Missing Authorization header:
+                  value:
+                    error: Missing Authorization header
+                Invalid token:
+                  value:
+                    error: Invalid token
+          description: Invalid Authorization header
+      security:
+        -
+          Bearer: []
+  /users/current:
+    get:
+      tags:
+        - users
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+              examples:
+                User details:
+                  value:
+                    accounts:
+                      -
+                        balance: 10000
+                        createdAt: '2021-09-14T22:38:05.659Z'
+                        currency: USD
+                        id: 61412463f1f9c72a7962229d
+                        name: Main
+                        number: abc154ea0a329257241c77623fe2b268c94
+                        userId: 61412463f1f9c72a7962229b
+                    id: 61412463f1f9c72a7962229b
+                    name: Meelis
+                    username: poisike
+          description: Successful response.
+      summary: Get user's details
+      description: Returns instance of `user`.
 components:
   schemas:
     user:
@@ -49,18 +149,18 @@ components:
       description: ''
       type: object
       properties:
-        name:
-          type: string
         username:
           type: string
         password:
           type: string
+        name:
+          type: string
       example:
-        name: Kalle Kaalikas
         username: kalle
-        password: kaalikakalle
+        password: kaalikaskalle
+        name: Kalle Kaalikas
     error:
-      title: Root type for error
+      title: Root Type for error
       description: ''
       type: object
       properties:
@@ -68,3 +168,17 @@ components:
           type: string
       example:
         error: Error message.
+    session:
+      description: ''
+      type: object
+  securitySchemes:
+    Bearer:
+      scheme: bearer
+      type: http
+tags:
+  -
+    name: sessions
+    description: ''
+  -
+    name: users
+    description: ''
