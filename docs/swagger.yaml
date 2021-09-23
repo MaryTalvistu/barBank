@@ -139,7 +139,23 @@ paths:
                     id: 61412463f1f9c72a7962229b
                     name: Meelis
                     username: poisike
-          description: Successful response.
+          description: Returns user's details.
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                Missing authorization header:
+                  value:
+                    error: Missing authorization header
+                Invalid authorization header:
+                  value:
+                    error: Invalid authorization header
+          description: Unauthorized
+      security:
+        -
+          Bearer: []
       summary: Get user's details
       description: Returns instance of `user`.
 components:
