@@ -71,7 +71,7 @@ paths:
               examples:
                 POST /sessions 201 response:
                   value:
-                    token: 31m57jabv526524n5
+                    token: 615bdce137135576c9f489bf
           description: Successful response.
         '401':
           content:
@@ -158,6 +158,79 @@ paths:
           Bearer: []
       summary: Get user's details
       description: Returns instance of `user`.
+  /transactions:
+    summary: Path used to manage the list of transactions.
+    description: >-
+      The REST endpoint/path used to list and create zero or more `transaction` entities.  This path
+      contains a `GET` and `POST` operation to perform the list and create tasks, respectively.
+    post:
+      requestBody:
+        description: A new `transaction` to be created.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/transaction'
+        required: true
+      tags:
+        - transactions
+      responses:
+        '201':
+          description: Successful response.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                Invalid amount:
+                  value:
+                    error: Invalid amount
+                Missing parameter:
+                  value:
+                    error: 'Transaction validation failed:.*:Path`.*` is required.'
+                Parameter shorter than the allowed length:
+                  value:
+                    error: Path `.*` (`.*`) is shorter than the allowed length
+          description: Invalid amount
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                Missing authorization header:
+                  value:
+                    error: Missing authorization header
+                Invalid authorization header:
+                  value:
+                    error: Invalid authorization header
+          description: Problem with authorization
+        '402':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                Insufficient funds:
+                  value:
+                    error: Insufficient funds
+          description: Insufficient funds
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                accountFrom not found:
+                  value:
+                    error: accountFrom not found
+          description: Not found
+      security:
+        -
+          Bearer: []
+      operationId: createtransaction
+      summary: Create a transaction
+      description: Creates a new instance of a `transaction`.
 components:
   schemas:
     user:
@@ -187,6 +260,25 @@ components:
     session:
       description: ''
       type: object
+    transaction:
+      title: Root Type for transaction
+      description: ''
+      type: object
+      properties:
+        accountFrom:
+          type: string
+        accountTo:
+          type: string
+        amount:
+          format: int32
+          type: integer
+        explanation:
+          type: string
+      example:
+        accountFrom: 132340f6951e3bf584794f409d29f525ef8
+        accountTo: 100BY000000001
+        amount: 150
+        explanation: Don’t go spend it all at once
   securitySchemes:
     Bearer:
       scheme: bearer
@@ -197,4 +289,7 @@ tags:
     description: ''
   -
     name: users
+    description: ''
+  -
+    name: transactions
     description: ''

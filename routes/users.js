@@ -34,8 +34,7 @@ const {verifyToken} = require("../middlewares");
                 return res.status(400).send({error: e.message})
             }
 
-            return res.status()
-        }
+    }
 
 
     return res.status(201).send('');
@@ -44,7 +43,6 @@ const {verifyToken} = require("../middlewares");
 router.get('/current', verifyToken, async function (req, res) {
     // Retrieve user data from database
     const user = await User.findOne({_id: req.userId})
-    console.log(user)
 
     //Get user's account data
     const accounts = await Account.find({userId: req.userId})
