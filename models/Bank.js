@@ -6,6 +6,7 @@ let validateUrl = function validateUrl(url) {
 
 module.exports = mongoose.model('Bank', mongoose.Schema({
         name: {type: String, required: true},
+        apiKey: {type: String, required: true },
         transactionUrl: {type: String, required: true, validate: validateUrl},
         bankPrefix: {type: String, required: true},
         owners: {type: String, required: true},

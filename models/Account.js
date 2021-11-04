@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+require('dotenv').config()
 
 module.exports = mongoose.model('Account', mongoose.Schema({
     name: {type: String, required: true, min: 2, max: 255, default: 'Main'},

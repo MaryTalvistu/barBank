@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 
 module.exports = mongoose.model('Transaction', mongoose.Schema({
 
+//    userID: {type: mongoose.Schema.Types.ObjectId, ref: "User"},
     accountFrom: {type: String, required: true, minlength: 4},
     accountTo: {type: String, required: true, minlength: 4},
     amount: {type: Number, required: true, min: 0.01},

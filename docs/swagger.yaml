@@ -231,6 +231,82 @@ paths:
       operationId: createtransaction
       summary: Create a transaction
       description: Creates a new instance of a `transaction`.
+  /transactions/b2b:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jwt'
+        required: true
+      tags:
+        - transactions
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transaction'
+              examples:
+                POST /transactions/b2b response:
+                  value: |-
+                    {
+                        "receiverName": "Malle Maasikas",
+                    }
+          description: Transaction accepted
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                Invalid signature:
+                  value:
+                    error: Invalid signature
+          description: Invalid signature
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                Bank \w+ was not found in Central Bank:
+                  value: |-
+                    {
+                        "error": "Bank \w+ was not found in Central Bank"
+                    }
+          description: Bank was not found in Central Bank"
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                There was an error communicating with the Central Bank:
+                  value:
+                    error: There was an error communicating with the Central Bank.*
+          description: There was an error communicating with Central Bank
+      summary: Accepts transactions from other banks
+  /transactions/jwks:
+    description: ''
+    get:
+      tags:
+        - transactions
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jwks'
+          description: >-
+            Set of keys in JWKS format containing the public key used to verify JSON Web Token
+            sent by the origin bank when initiating a transaction with another bank and signed
+            with the corresponding private key
+      summary: Returns JWKS for validating jwt signature
+      description: >-
+        Returns set of keys containing the public key used to verify JSON Web Token sent by the origin
+        bank when initiating a transaction with another bank and signed with the corresponding private
+        key
 components:
   schemas:
     user:
@@ -279,6 +355,28 @@ components:
         accountTo: 100BY000000001
         amount: 150
         explanation: Don’t go spend it all at once
+    jwt:
+      title: Root Type for jwt
+      description: ''
+      type: object
+      properties:
+        jwt:
+          type: string
+      example:
+        jwt: >-
+          eyJhbGciOiJSUzI1NiIsImtpZCI6Ii03VFJQUVdOcFVKdHFSZkplRWdSUzZUOVQxcnl3cHQ4ZE9iam5pM25FeFEifQ.eyJhY2NvdW50RnJvbSI6IjEzMjM0MGY2OTUxZTNiZjU4NDc5NGY0MDlkMjlmNTI1ZWY4IiwiYWNjb3VudFRvIjoiMjIyYWUzZTcyN2ZhZWUyNTA4N2EzMzI3ZTA3MjM4OTQ5ZGQiLCJhbW91bnQiOjIwLCJjdXJyZW5jeSI6IlVTRCIsImV4cGxhbmF0aW9uIjoiYSIsInNlbmRlck5hbWUiOiJLYWxsZSBLYWFsaWthcyJ9.FWT8iV4URKboMjzP_YsSz3c6u84ocZq3xAtbMsJhC1qkFBT0jgr3ZirsUVeN_XKus_26OBKm03KlmDMDtbxagpO_cyJg-ACcW4kRHDS_oJfgbbXAyfoLHBPPpoEisbEJaU5Ijl_8UsTnnJtZtFSLpwG06cLHL7G6edsm01GVRcLmy9Svi9DyIaWXH9tjp2p4n6MmCuugqzmy9DD8f8tl8w-KLH9nAUW5uJK3SOxKByxl5uDEO_TidoMxPWQX9e1aRgGsosACdJbC5R5YVNDw8f6KxZBSzIs6HdkJsBssQ9T7xm3BLCMK8-kqeeeOn7bCJ7WQTvgNSRrqOOOK-OLmHQ
+    jwks:
+      title: Root Type for jwks
+      description: ''
+      type: object
+      example:
+        keys:
+          -
+            kty: RSA
+            kid: QVhlbsNZZY83YRFHS-OWJqiqEMbjoaqhZIiPVRZgW-k
+            'n': >-
+              RlWISHXpjWXdYGLSB99okpIW8eEL9ochaEMUyZ8bHW46CLXX-kkI8l6ue7KtxuyrWpuOpuzrHtZWp29H6fgyOq1mKZ0heK-XkV1rJoKHd-6wc0Jdpg2SPwC6BWRGcE2HnvHxT0s8pfa_GwTd7Tu27gIR2S7TVx7N86E5jxll7t0
+            e: AQAB
   securitySchemes:
     Bearer:
       scheme: bearer
