@@ -22,6 +22,7 @@
     "jsdom": "^17.0.0",
     "md5": "^2.3.0",
     "mongoose": "^6.0.6",
+    "nock": "^13.1.4",
     "node-fetch": "^2.6.1",
     "node-jose": "^2.0.0",
     "swagger-ui-express": "^4.1.6",

@@ -46,8 +46,27 @@ exports.refreshListOfBanksFromCentralBank = async function refreshListOfBanksFro
 
     try {
 
+        if(process.env.TEST_MODE==='true') {
+
+            console.log('TEST_MODE=TRUE');
+            const nock = require('nock')
+            nock(process.env.CENTRAL_BANK_URL)
+                .persist()
+                .get('/banks')
+                .reply(200, [
+                    {
+                        "name": "fooBank",
+                        "transactionUrl": "http://localhost:3030/transactions/b2b",
+                        "bankPrefix": "843",
+                        "owners": "John Smith",
+                        "jwksUrl": "http://foobank.diarainfra.com/jwks.json"
+                    }
+                ]
+                )
+        }
+
         //Attempt to get a list of banks in JSON format from central bank
-        let banks = await fetch(process.env.CENTRAL_BANK_URL, {
+        let banks = await fetch(`${process.env.CENTRAL_BANK_URL}/banks`, {
             headers: {'Api-Key': process.env.CENTRAL_BANK_APIKEY}
         }).then(responseText => responseText.json())
 
@@ -208,6 +227,19 @@ exports.processTransactions = async function () {
         }
 
        try {
+            const nock = require('nock')
+           let nockScope
+
+           if (process.env.TEST_MODE === 'true') {
+               const nockUrl = new URL(destinationBank.transactionUrl)
+               console.log('Nocking ' + JSON.stringify(nockUrl));
+
+                nock(`${nockUrl.protocol}//${nockUrl.host}`)
+                   .persist()
+                   .post(nockUrl.pathname)
+                   .reply(200, {receiverName: 'foobar'})
+           }
+
            const response = await sendRequestToBank(destinationBank, await createSignedTransaction({
                accountFrom: transaction.accountFrom,
                accountTo: transaction.accountTo,
