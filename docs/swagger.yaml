@@ -163,6 +163,32 @@ paths:
     description: >-
       The REST endpoint/path used to list and create zero or more `transaction` entities.  This path
       contains a `GET` and `POST` operation to perform the list and create tasks, respectively.
+    get:
+      tags:
+        - transactions
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transaction'
+              examples:
+                GET /transactions 200 response:
+                  value:
+                    accountFrom: ccf005d3dfdc0cfed9d6740cb7d94f5d451
+                    accountTo: 92c84bb50b65304f534480390cc90aafcbc
+                    amount: '10'
+                    createdAt: '''2021-11-04T19:53:47.948Z'''
+                    currency: RUB
+                    receiverName: Kristi Maask
+                    senderName: Mary
+                    status: Completed
+          description: 'List of all user''s transactions with accounts from, names from, sums and date.'
+      security:
+        -
+          Bearer: []
+      summary: Returns list of transactions
+      description: 'Returns all transactions of user with accounts from, names from, sums and date.'
     post:
       requestBody:
         description: A new `transaction` to be created.

@@ -20,7 +20,10 @@ app.use('/users', require('./routes/users'))
 app.use('/sessions', require('./routes/sessions'))
 app.use('/transactions', require('./routes/transactions'))
 
-mongoose.connect(process.env.MONGODB_URI, {}, function (){
+mongoose.connect(process.env.MONGODB_URI, {}, function (e){
+    if(e){
+        return console.log(e)
+    }
     console.log('Connected to mongoDB')
 })
 
